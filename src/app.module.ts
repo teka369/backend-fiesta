@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { PackagesModule } from './modules/packages/packages.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PackagesModule } from './modules/packages/packages.module';
     ProductsModule,
     CategoriesModule,
     PackagesModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -82,6 +83,9 @@ export declare class ProductsController {
             totalPages: number;
         };
     }>;
+    uploadImage(file: Express.Multer.File | undefined, req: Request): {
+        url: string;
+    };
     bulkStatus(dto: BulkStatusDto): Promise<{
         updated: number;
     }>;

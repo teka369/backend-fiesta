@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model SiteSettings {
+  id                  String   @id @default("main")
+  googleMapsEmbedUrl  String?
+  updatedAt           DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
 // ============== AUTH ==============
 model User {
   id        String   @id @default(cuid())
