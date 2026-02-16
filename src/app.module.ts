@@ -8,6 +8,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { PackagesModule } from './modules/packages/packages.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     CategoriesModule,
     PackagesModule,
     SettingsModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],

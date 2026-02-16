@@ -27,6 +27,7 @@ let SettingsController = class SettingsController {
     updateSettings(body) {
         return this.settingsService.updateSettings({
             googleMapsEmbedUrl: body.googleMapsEmbedUrl ?? null,
+            featuredProductId: body.featuredProductId ?? null,
         });
     }
 };

@@ -17,6 +17,7 @@ const products_module_1 = require("./modules/products/products.module");
 const categories_module_1 = require("./modules/categories/categories.module");
 const packages_module_1 = require("./modules/packages/packages.module");
 const settings_module_1 = require("./modules/settings/settings.module");
+const contact_module_1 = require("./modules/contact/contact.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -30,6 +31,7 @@ exports.AppModule = AppModule = __decorate([
             categories_module_1.CategoriesModule,
             packages_module_1.PackagesModule,
             settings_module_1.SettingsModule,
+            contact_module_1.ContactModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

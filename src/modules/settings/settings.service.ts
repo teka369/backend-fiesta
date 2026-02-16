@@ -11,19 +11,40 @@ export class SettingsService {
     const settings = await this.prisma.siteSettings.findUnique({
       where: { id: this.SETTINGS_ID },
     });
-    return settings ?? { googleMapsEmbedUrl: null };
+    return settings ?? { googleMapsEmbedUrl: null, featuredProductId: null };
   }
 
-  async updateSettings(data: { googleMapsEmbedUrl?: string | null }) {
+  async updateSettings(data: { googleMapsEmbedUrl?: string | null; featuredProductId?: string | null }) {
+    // Get current settings to preserve values not being updated
+    const current = await this.prisma.siteSettings.findUnique({
+      where: { id: this.SETTINGS_ID },
+    });
+
     const cleanedUrl =
-      typeof data.googleMapsEmbedUrl === 'string'
-        ? data.googleMapsEmbedUrl.trim() || null
-        : null;
+      'googleMapsEmbedUrl' in data
+        ? typeof data.googleMapsEmbedUrl === 'string'
+          ? data.googleMapsEmbedUrl.trim() || null
+          : null
+        : current?.googleMapsEmbedUrl ?? null;
+
+    const cleanedProductId =
+      'featuredProductId' in data
+        ? typeof data.featuredProductId === 'string'
+          ? data.featuredProductId.trim() || null
+          : null
+        : current?.featuredProductId ?? null;
 
     const settings = await this.prisma.siteSettings.upsert({
       where: { id: this.SETTINGS_ID },
-      update: { googleMapsEmbedUrl: cleanedUrl ?? null },
-      create: { id: this.SETTINGS_ID, googleMapsEmbedUrl: cleanedUrl ?? null },
+      update: {
+        googleMapsEmbedUrl: cleanedUrl,
+        featuredProductId: cleanedProductId,
+      },
+      create: {
+        id: this.SETTINGS_ID,
+        googleMapsEmbedUrl: cleanedUrl,
+        featuredProductId: cleanedProductId,
+      },
     });
 
     return settings;
