@@ -50,7 +50,7 @@ export class ContactService {
         const htmlContent = this.buildEmailHtml(dto);
         
         const data = await this.resend.emails.send({
-          from: ' Fiesta Events <onboarding@resend.dev>',
+          from: ' Fiesta Events <noreply@sunnypartyrentalsllc.com>',
           to: [adminEmail],
           subject: `New Contact Message from ${dto.name}`,
           html: htmlContent,
