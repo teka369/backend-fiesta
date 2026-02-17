@@ -13,10 +13,15 @@ export class SettingsController {
 
   @Put()
   @UseGuards(JwtAuthGuard)
-  updateSettings(@Body() body: { googleMapsEmbedUrl?: string | null; featuredProductId?: string | null }) {
+  updateSettings(@Body() body: { 
+    googleMapsEmbedUrl?: string | null; 
+    featuredProductId?: string | null;
+    contactPhone?: string | null;
+  }) {
     return this.settingsService.updateSettings({
       googleMapsEmbedUrl: body.googleMapsEmbedUrl ?? null,
       featuredProductId: body.featuredProductId ?? null,
+      contactPhone: body.contactPhone ?? null,
     });
   }
 }

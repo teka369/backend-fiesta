@@ -89,10 +89,10 @@ export declare class ProductsController {
     bulkStatus(dto: BulkStatusDto): Promise<{
         updated: number;
     }>;
-    getContactLink(id: string, channel?: 'whatsapp' | 'phone', phone?: string): {
+    getContactLink(id: string, channel?: 'whatsapp' | 'phone', phone?: string): Promise<{
         url: string;
         label: string;
-    };
+    }>;
     findBySlug(slug: string): Promise<{
         category: {
             name: string;

@@ -14,6 +14,7 @@ model SiteSettings {
   id                  String   @id @default("main")
   googleMapsEmbedUrl  String?
   featuredProductId   String?
+  contactPhone        String?
   updatedAt           DateTime @updatedAt
 
   @@map("site_settings")

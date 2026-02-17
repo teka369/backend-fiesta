@@ -13,10 +13,13 @@ exports.ProductsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const product_status_enum_1 = require("../../common/enums/product-status.enum");
+const settings_service_1 = require("../settings/settings.service");
 let ProductsService = class ProductsService {
     prisma;
-    constructor(prisma) {
+    settingsService;
+    constructor(prisma, settingsService) {
         this.prisma = prisma;
+        this.settingsService = settingsService;
     }
     toSlug(title) {
         return title
@@ -148,11 +151,12 @@ let ProductsService = class ProductsService {
         });
         return { updated: result.count };
     }
-    getContactLink(id, channel, phone) {
-        const raw = phone ?? process.env.CONTACT_PHONE ?? '';
+    async getContactLink(id, channel, phone) {
+        const settings = await this.settingsService.getSettings();
+        const raw = phone ?? settings.contactPhone ?? '';
         const base = raw.replace(/\D/g, '');
         if (!base) {
-            return { url: '', label: 'Configurar CONTACT_PHONE o query phone' };
+            return { url: '', label: 'Configurar teléfono en Settings del admin' };
         }
         if (channel === 'phone') {
             return { url: `tel:${base}`, label: 'Llamar' };
@@ -165,6 +169,7 @@ let ProductsService = class ProductsService {
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        settings_service_1.SettingsService])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

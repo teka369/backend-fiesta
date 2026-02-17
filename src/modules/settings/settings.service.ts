@@ -11,11 +11,10 @@ export class SettingsService {
     const settings = await this.prisma.siteSettings.findUnique({
       where: { id: this.SETTINGS_ID },
     });
-    return settings ?? { googleMapsEmbedUrl: null, featuredProductId: null };
+    return settings ?? { googleMapsEmbedUrl: null, featuredProductId: null, contactPhone: null };
   }
 
-  async updateSettings(data: { googleMapsEmbedUrl?: string | null; featuredProductId?: string | null }) {
-    // Get current settings to preserve values not being updated
+  async updateSettings(data: { googleMapsEmbedUrl?: string | null; featuredProductId?: string | null; contactPhone?: string | null }) {
     const current = await this.prisma.siteSettings.findUnique({
       where: { id: this.SETTINGS_ID },
     });
@@ -34,16 +33,25 @@ export class SettingsService {
           : null
         : current?.featuredProductId ?? null;
 
+    const cleanedPhone =
+      'contactPhone' in data
+        ? typeof data.contactPhone === 'string'
+          ? data.contactPhone.trim() || null
+          : null
+        : current?.contactPhone ?? null;
+
     const settings = await this.prisma.siteSettings.upsert({
       where: { id: this.SETTINGS_ID },
       update: {
         googleMapsEmbedUrl: cleanedUrl,
         featuredProductId: cleanedProductId,
+        contactPhone: cleanedPhone,
       },
       create: {
         id: this.SETTINGS_ID,
         googleMapsEmbedUrl: cleanedUrl,
         featuredProductId: cleanedProductId,
+        contactPhone: cleanedPhone,
       },
     });
 

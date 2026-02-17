@@ -6,10 +6,14 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { BulkStatusDto } from './dto/bulk-status.dto';
 import { ProductStatus } from '../../common/enums/product-status.enum';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly settingsService: SettingsService,
+  ) {}
 
   private toSlug(title: string): string {
     return title
@@ -158,17 +162,19 @@ export class ProductsService {
   /**
    * Genera la URL de contacto (WhatsApp o tel) para el producto.
    * El frontend usa esta URL en el botón de acción de venta/renta.
-   * Si no se pasa phone, se usa process.env.CONTACT_PHONE.
+   * Usa el teléfono configurado en SiteSettings (contactPhone).
    */
-  getContactLink(
+  async getContactLink(
     id: string,
     channel: 'whatsapp' | 'phone',
     phone?: string,
-  ): { url: string; label: string } {
-    const raw = phone ?? process.env.CONTACT_PHONE ?? '';
+  ): Promise<{ url: string; label: string }> {
+    // Si se pasa teléfono por parámetro, usarlo; si no, obtener de settings
+    const settings = await this.settingsService.getSettings();
+    const raw = phone ?? settings.contactPhone ?? '';
     const base = raw.replace(/\D/g, '');
     if (!base) {
-      return { url: '', label: 'Configurar CONTACT_PHONE o query phone' };
+      return { url: '', label: 'Configurar teléfono en Settings del admin' };
     }
     if (channel === 'phone') {
       return { url: `tel:${base}`, label: 'Llamar' };

@@ -3,9 +3,11 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { BulkStatusDto } from './dto/bulk-status.dto';
+import { SettingsService } from '../settings/settings.service';
 export declare class ProductsService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly settingsService;
+    constructor(prisma: PrismaService, settingsService: SettingsService);
     private toSlug;
     private ensureSlug;
     create(dto: CreateProductDto): Promise<{
@@ -203,8 +205,8 @@ export declare class ProductsService {
     bulkUpdateStatus(dto: BulkStatusDto): Promise<{
         updated: number;
     }>;
-    getContactLink(id: string, channel: 'whatsapp' | 'phone', phone?: string): {
+    getContactLink(id: string, channel: 'whatsapp' | 'phone', phone?: string): Promise<{
         url: string;
         label: string;
-    };
+    }>;
 }

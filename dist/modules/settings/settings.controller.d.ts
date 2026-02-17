@@ -7,17 +7,21 @@ export declare class SettingsController {
         updatedAt: Date;
         googleMapsEmbedUrl: string | null;
         featuredProductId: string | null;
+        contactPhone: string | null;
     } | {
         googleMapsEmbedUrl: null;
         featuredProductId: null;
+        contactPhone: null;
     }>;
     updateSettings(body: {
         googleMapsEmbedUrl?: string | null;
         featuredProductId?: string | null;
+        contactPhone?: string | null;
     }): Promise<{
         id: string;
         updatedAt: Date;
         googleMapsEmbedUrl: string | null;
         featuredProductId: string | null;
+        contactPhone: string | null;
     }>;
 }
