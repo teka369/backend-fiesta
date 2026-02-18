@@ -1,12 +1,13 @@
-import type { Request } from 'express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { BulkStatusDto } from './dto/bulk-status.dto';
+import { ConfigService } from '@nestjs/config';
 export declare class ProductsController {
     private readonly productsService;
-    constructor(productsService: ProductsService);
+    private readonly configService;
+    constructor(productsService: ProductsService, configService: ConfigService);
     create(createProductDto: CreateProductDto): Promise<{
         category: {
             name: string;
@@ -83,9 +84,9 @@ export declare class ProductsController {
             totalPages: number;
         };
     }>;
-    uploadImage(file: Express.Multer.File | undefined, req: Request): {
+    uploadImage(file: Express.Multer.File | undefined): Promise<{
         url: string;
-    };
+    }>;
     bulkStatus(dto: BulkStatusDto): Promise<{
         updated: number;
     }>;

@@ -48,19 +48,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
-const path_1 = require("path");
-const fs = __importStar(require("fs"));
 const products_service_1 = require("./products.service");
 const create_product_dto_1 = require("./dto/create-product.dto");
 const update_product_dto_1 = require("./dto/update-product.dto");
 const product_query_dto_1 = require("./dto/product-query.dto");
 const bulk_status_dto_1 = require("./dto/bulk-status.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const config_1 = require("@nestjs/config");
+const cloudinary_1 = require("cloudinary");
+const streamifier = __importStar(require("streamifier"));
 let ProductsController = class ProductsController {
     productsService;
-    constructor(productsService) {
+    configService;
+    constructor(productsService, configService) {
         this.productsService = productsService;
+        this.configService = configService;
     }
     create(createProductDto) {
         return this.productsService.create(createProductDto);
@@ -68,17 +70,30 @@ let ProductsController = class ProductsController {
     findAll(query) {
         return this.productsService.findAll(query);
     }
-    uploadImage(file, req) {
+    async uploadImage(file) {
         if (!file) {
             throw new common_1.BadRequestException('No file uploaded');
         }
-        const protoHeader = req.headers['x-forwarded-proto'];
-        const hostHeader = req.headers['x-forwarded-host'] ?? req.headers.host;
-        const protocol = Array.isArray(protoHeader) ? protoHeader[0] : protoHeader || req.protocol;
-        const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
-        const baseUrl = host ? `${protocol}://${host}` : '';
-        const url = `${baseUrl}/uploads/products/${file.filename}`;
-        return { url };
+        cloudinary_1.v2.config({
+            cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
+            api_key: this.configService.get('CLOUDINARY_API_KEY'),
+            api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
+        });
+        const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary_1.v2.uploader.upload_stream({
+                folder: 'fiesta-products',
+                public_id: `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+            }, (error, result) => {
+                if (error)
+                    reject(error);
+                else if (result)
+                    resolve(result);
+                else
+                    reject(new Error('No result from Cloudinary'));
+            });
+            streamifier.createReadStream(file.buffer).pipe(uploadStream);
+        });
+        return { url: result.secure_url };
     }
     bulkStatus(dto) {
         return this.productsService.bulkUpdateStatus(dto);
@@ -119,17 +134,6 @@ __decorate([
     (0, common_1.Post)('upload-image'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: (req, file, cb) => {
-                const uploadPath = './uploads/products';
-                fs.mkdirSync(uploadPath, { recursive: true });
-                cb(null, uploadPath);
-            },
-            filename: (req, file, cb) => {
-                const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                cb(null, `${uniqueSuffix}${(0, path_1.extname)(file.originalname)}`);
-            },
-        }),
         fileFilter: (req, file, cb) => {
             if (!file.mimetype.startsWith('image/')) {
                 return cb(new common_1.BadRequestException('Only image files are allowed'), false);
@@ -139,10 +143,9 @@ __decorate([
         limits: { fileSize: 5 * 1024 * 1024 },
     })),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.Post)('bulk-status'),
@@ -194,6 +197,7 @@ __decorate([
 ], ProductsController.prototype, "remove", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, common_1.Controller)('products'),
-    __metadata("design:paramtypes", [products_service_1.ProductsService])
+    __metadata("design:paramtypes", [products_service_1.ProductsService,
+        config_1.ConfigService])
 ], ProductsController);
 //# sourceMappingURL=products.controller.js.map
