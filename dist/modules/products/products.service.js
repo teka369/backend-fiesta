@@ -8,18 +8,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsService = void 0;
 const common_1 = require("@nestjs/common");
+const cache_manager_1 = require("@nestjs/cache-manager");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const product_status_enum_1 = require("../../common/enums/product-status.enum");
 const settings_service_1 = require("../settings/settings.service");
 let ProductsService = class ProductsService {
     prisma;
     settingsService;
-    constructor(prisma, settingsService) {
+    cacheManager;
+    CACHE_KEY_PREFIX = 'products';
+    constructor(prisma, settingsService, cacheManager) {
         this.prisma = prisma;
         this.settingsService = settingsService;
+        this.cacheManager = cacheManager;
     }
     toSlug(title) {
         return title
@@ -67,6 +74,10 @@ let ProductsService = class ProductsService {
     async findAll(query) {
         const { page = 1, limit = 10, status, categoryId, search, sortBy = 'createdAt', sortOrder = 'desc' } = query;
         const skip = (page - 1) * limit;
+        const cacheKey = `${this.CACHE_KEY_PREFIX}:${JSON.stringify(query)}`;
+        const cached = await this.cacheManager.get(cacheKey);
+        if (cached)
+            return cached;
         const where = {
             ...(status && { status: status }),
             ...(categoryId && { categoryId }),
@@ -87,10 +98,12 @@ let ProductsService = class ProductsService {
             }),
             this.prisma.product.count({ where }),
         ]);
-        return {
+        const result = {
             data: items,
             meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
         };
+        await this.cacheManager.set(cacheKey, result, 180);
+        return result;
     }
     async findOne(id) {
         const product = await this.prisma.product.findUnique({
@@ -169,7 +182,8 @@ let ProductsService = class ProductsService {
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
+    __param(2, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        settings_service_1.SettingsService])
+        settings_service_1.SettingsService, Object])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

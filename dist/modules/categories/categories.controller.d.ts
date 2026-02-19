@@ -4,7 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export declare class CategoriesController {
     private readonly categoriesService;
     constructor(categoriesService: CategoriesService);
-    findAll(): Promise<{
+    findAll(): Promise<"categories-all" | {
         name: string;
         id: string;
         createdAt: Date;

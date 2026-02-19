@@ -1,9 +1,12 @@
 import { PrismaService } from '../../prisma/prisma.service';
+import type { Cache } from 'cache-manager';
 export declare class SettingsService {
     private readonly prisma;
+    private cacheManager;
     private readonly SETTINGS_ID;
-    constructor(prisma: PrismaService);
-    getSettings(): Promise<{
+    private readonly CACHE_KEY;
+    constructor(prisma: PrismaService, cacheManager: Cache);
+    getSettings(): Promise<"main" | {
         id: string;
         updatedAt: Date;
         googleMapsEmbedUrl: string | null;

@@ -42,48 +42,7 @@ export declare class ProductsController {
         categoryId: string | null;
         isActive: boolean;
     }>;
-    findAll(query: ProductQueryDto): Promise<{
-        data: ({
-            category: {
-                name: string;
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                sortOrder: number;
-                slug: string;
-                description: string | null;
-                isActive: boolean;
-                imageUrl: string | null;
-            } | null;
-            images: {
-                id: string;
-                createdAt: Date;
-                url: string;
-                alt: string | null;
-                sortOrder: number;
-                productId: string;
-            }[];
-        } & {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            sortOrder: number;
-            title: string;
-            slug: string;
-            description: string;
-            price: import("@prisma/client/runtime/library").Decimal;
-            status: import("@prisma/client").$Enums.ProductStatus;
-            saleType: import("@prisma/client").$Enums.ProductSaleType;
-            categoryId: string | null;
-            isActive: boolean;
-        })[];
-        meta: {
-            total: number;
-            page: number;
-            limit: number;
-            totalPages: number;
-        };
-    }>;
+    findAll(query: ProductQueryDto): Promise<{}>;
     uploadImage(file: Express.Multer.File | undefined): Promise<{
         url: string;
     }>;
