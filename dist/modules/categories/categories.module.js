@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoriesModule = void 0;
 const common_1 = require("@nestjs/common");
-const cache_manager_1 = require("@nestjs/cache-manager");
 const categories_controller_1 = require("./categories.controller");
 const categories_service_1 = require("./categories.service");
 let CategoriesModule = class CategoriesModule {
@@ -16,7 +15,6 @@ let CategoriesModule = class CategoriesModule {
 exports.CategoriesModule = CategoriesModule;
 exports.CategoriesModule = CategoriesModule = __decorate([
     (0, common_1.Module)({
-        imports: [cache_manager_1.CacheModule],
         controllers: [categories_controller_1.CategoriesController],
         providers: [categories_service_1.CategoriesService],
         exports: [categories_service_1.CategoriesService],
