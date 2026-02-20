@@ -8,21 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoriesService = void 0;
 const common_1 = require("@nestjs/common");
-const cache_manager_1 = require("@nestjs/cache-manager");
 const prisma_service_1 = require("../../prisma/prisma.service");
 let CategoriesService = class CategoriesService {
     prisma;
-    cacheManager;
-    CACHE_KEY = 'categories-all';
-    constructor(prisma, cacheManager) {
+    constructor(prisma) {
         this.prisma = prisma;
-        this.cacheManager = cacheManager;
     }
     toSlug(text) {
         return text
@@ -33,13 +26,9 @@ let CategoriesService = class CategoriesService {
             .replace(/(^-|-$)/g, '');
     }
     async findAll() {
-        const cached = await this.cacheManager.get(this.CACHE_KEY);
-        if (cached)
-            return cached;
         const categories = await this.prisma.category.findMany({
             orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
         });
-        await this.cacheManager.set(this.CACHE_KEY, categories, 300);
         return categories;
     }
     async findOne(id) {
@@ -65,7 +54,6 @@ let CategoriesService = class CategoriesService {
                 isActive: dto.isActive ?? true,
             },
         });
-        await this.cacheManager.del(this.CACHE_KEY);
         return category;
     }
     async update(id, dto) {
@@ -92,20 +80,17 @@ let CategoriesService = class CategoriesService {
                 ...(dto.isActive !== undefined && { isActive: dto.isActive }),
             },
         });
-        await this.cacheManager.del(this.CACHE_KEY);
         return category;
     }
     async remove(id) {
         await this.findOne(id);
         const result = await this.prisma.category.delete({ where: { id } });
-        await this.cacheManager.del(this.CACHE_KEY);
         return result;
     }
 };
 exports.CategoriesService = CategoriesService;
 exports.CategoriesService = CategoriesService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, Object])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], CategoriesService);
 //# sourceMappingURL=categories.service.js.map

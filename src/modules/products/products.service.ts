@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProductStatus as PrismaProductStatus } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -8,16 +7,12 @@ import { ProductQueryDto } from './dto/product-query.dto';
 import { BulkStatusDto } from './dto/bulk-status.dto';
 import { ProductStatus } from '../../common/enums/product-status.enum';
 import { SettingsService } from '../settings/settings.service';
-import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductsService {
-  private readonly CACHE_KEY_PREFIX = 'products';
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly settingsService: SettingsService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private toSlug(title: string): string {
@@ -71,13 +66,6 @@ export class ProductsService {
     const { page = 1, limit = 10, status, categoryId, search, sortBy = 'createdAt', sortOrder = 'desc' } = query;
     const skip = (page - 1) * limit;
 
-    // Create cache key based on query params
-    const cacheKey = `${this.CACHE_KEY_PREFIX}:${JSON.stringify(query)}`;
-    
-    // Try cache first
-    const cached = await this.cacheManager.get(cacheKey);
-    if (cached) return cached;
-
     const where = {
       ...(status && { status: status as PrismaProductStatus }),
       ...(categoryId && { categoryId }),
@@ -100,15 +88,10 @@ export class ProductsService {
       this.prisma.product.count({ where }),
     ]);
 
-    const result = {
+    return {
       data: items,
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
-
-    // Cache for 3 minutes (shorter since products change more frequently)
-    await this.cacheManager.set(cacheKey, result, 180);
-
-    return result;
   }
 
   async findOne(id: string) {

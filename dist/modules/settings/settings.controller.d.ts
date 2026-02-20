@@ -2,7 +2,7 @@ import { SettingsService } from './settings.service';
 export declare class SettingsController {
     private readonly settingsService;
     constructor(settingsService: SettingsService);
-    getSettings(): Promise<"main" | {
+    getSettings(): Promise<{
         id: string;
         updatedAt: Date;
         googleMapsEmbedUrl: string | null;

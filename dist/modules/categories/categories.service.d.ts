@@ -1,14 +1,11 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import type { Cache } from 'cache-manager';
 export declare class CategoriesService {
     private readonly prisma;
-    private cacheManager;
-    private readonly CACHE_KEY;
-    constructor(prisma: PrismaService, cacheManager: Cache);
+    constructor(prisma: PrismaService);
     private toSlug;
-    findAll(): Promise<"categories-all" | {
+    findAll(): Promise<{
         name: string;
         id: string;
         createdAt: Date;

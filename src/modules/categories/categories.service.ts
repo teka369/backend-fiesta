@@ -1,18 +1,11 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class CategoriesService {
-  private readonly CACHE_KEY = 'categories-all';
-
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private toSlug(text: string): string {
     return text
@@ -24,17 +17,9 @@ export class CategoriesService {
   }
 
   async findAll() {
-    // Try cache first
-    const cached = await this.cacheManager.get<typeof this.CACHE_KEY>(this.CACHE_KEY);
-    if (cached) return cached;
-
     const categories = await this.prisma.category.findMany({
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
-
-    // Cache for 5 minutes
-    await this.cacheManager.set(this.CACHE_KEY, categories, 300);
-
     return categories;
   }
 
@@ -61,10 +46,6 @@ export class CategoriesService {
         isActive: dto.isActive ?? true,
       },
     });
-
-    // Invalidate cache
-    await this.cacheManager.del(this.CACHE_KEY);
-
     return category;
   }
 
@@ -90,20 +71,12 @@ export class CategoriesService {
         ...(dto.isActive !== undefined && { isActive: dto.isActive }),
       },
     });
-
-    // Invalidate cache
-    await this.cacheManager.del(this.CACHE_KEY);
-
     return category;
   }
 
   async remove(id: string) {
     await this.findOne(id);
     const result = await this.prisma.category.delete({ where: { id } });
-    
-    // Invalidate cache
-    await this.cacheManager.del(this.CACHE_KEY);
-    
     return result;
   }
 }

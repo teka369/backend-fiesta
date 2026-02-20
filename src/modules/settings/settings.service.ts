@@ -1,32 +1,17 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class SettingsService {
   private readonly SETTINGS_ID = 'main';
-  private readonly CACHE_KEY = 'site-settings';
 
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getSettings() {
-    // Try cache first
-    const cached = await this.cacheManager.get<typeof this.SETTINGS_ID>(this.CACHE_KEY);
-    if (cached) return cached;
-
     const settings = await this.prisma.siteSettings.findUnique({
       where: { id: this.SETTINGS_ID },
     });
-    const result = settings ?? { googleMapsEmbedUrl: null, featuredProductId: null, contactPhone: null };
-    
-    // Cache for 5 minutes
-    await this.cacheManager.set(this.CACHE_KEY, result, 300);
-    
-    return result;
+    return settings ?? { googleMapsEmbedUrl: null, featuredProductId: null, contactPhone: null };
   }
 
   async updateSettings(data: { googleMapsEmbedUrl?: string | null; featuredProductId?: string | null; contactPhone?: string | null }) {
@@ -69,9 +54,6 @@ export class SettingsService {
         contactPhone: cleanedPhone,
       },
     });
-
-    // Invalidate cache
-    await this.cacheManager.del(this.CACHE_KEY);
     
     return settings;
   }
