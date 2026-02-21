@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdatePackageDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const swagger_1 = require("@nestjs/swagger");
 const package_item_dto_1 = require("./package-item.dto");
 class UpdatePackageDto {
     title;
@@ -23,32 +24,63 @@ class UpdatePackageDto {
 }
 exports.UpdatePackageDto = UpdatePackageDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Paquete Fiestas Infantiles',
+        description: 'Título del paquete',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdatePackageDto.prototype, "title", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'paquete-fiestas-infantiles',
+        description: 'Slug URL friendly',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdatePackageDto.prototype, "slug", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Paquete completo para fiestas infantiles',
+        description: 'Descripción del paquete',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdatePackageDto.prototype, "description", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 350000,
+        description: 'Precio especial del paquete',
+        minimum: 0,
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(0),
     __metadata("design:type", Number)
 ], UpdatePackageDto.prototype, "specialPrice", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: 'Si el paquete está activo',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdatePackageDto.prototype, "isActive", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        type: [package_item_dto_1.PackageItemDto],
+        description: 'Array de productos incluidos en el paquete',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

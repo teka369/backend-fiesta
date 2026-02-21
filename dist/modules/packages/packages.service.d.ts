@@ -4,7 +4,6 @@ import { UpdatePackageDto } from './dto/update-package.dto';
 export declare class PackagesService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    private toSlug;
     findAll(): Promise<({
         items: ({
             product: {
@@ -17,13 +16,13 @@ export declare class PackagesService {
                     productId: string;
                 }[];
             } & {
+                description: string;
+                title: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 sortOrder: number;
-                title: string;
                 slug: string;
-                description: string;
                 price: import("@prisma/client/runtime/library").Decimal;
                 status: import("@prisma/client").$Enums.ProductStatus;
                 saleType: import("@prisma/client").$Enums.ProductSaleType;
@@ -38,12 +37,12 @@ export declare class PackagesService {
             packageId: string;
         })[];
     } & {
+        description: string | null;
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         slug: string;
-        description: string | null;
         isActive: boolean;
         specialPrice: import("@prisma/client/runtime/library").Decimal;
     })[]>;
@@ -51,13 +50,13 @@ export declare class PackagesService {
         items: ({
             product: {
                 category: {
+                    description: string | null;
                     name: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
                     sortOrder: number;
                     slug: string;
-                    description: string | null;
                     isActive: boolean;
                     imageUrl: string | null;
                 } | null;
@@ -70,13 +69,13 @@ export declare class PackagesService {
                     productId: string;
                 }[];
             } & {
+                description: string;
+                title: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 sortOrder: number;
-                title: string;
                 slug: string;
-                description: string;
                 price: import("@prisma/client/runtime/library").Decimal;
                 status: import("@prisma/client").$Enums.ProductStatus;
                 saleType: import("@prisma/client").$Enums.ProductSaleType;
@@ -91,25 +90,25 @@ export declare class PackagesService {
             packageId: string;
         })[];
     } & {
+        description: string | null;
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         slug: string;
-        description: string | null;
         isActive: boolean;
         specialPrice: import("@prisma/client/runtime/library").Decimal;
     }>;
     create(dto: CreatePackageDto): Promise<{
         items: ({
             product: {
+                description: string;
+                title: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 sortOrder: number;
-                title: string;
                 slug: string;
-                description: string;
                 price: import("@prisma/client/runtime/library").Decimal;
                 status: import("@prisma/client").$Enums.ProductStatus;
                 saleType: import("@prisma/client").$Enums.ProductSaleType;
@@ -124,25 +123,25 @@ export declare class PackagesService {
             packageId: string;
         })[];
     } & {
+        description: string | null;
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         slug: string;
-        description: string | null;
         isActive: boolean;
         specialPrice: import("@prisma/client/runtime/library").Decimal;
     }>;
     update(id: string, dto: UpdatePackageDto): Promise<{
         items: ({
             product: {
+                description: string;
+                title: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 sortOrder: number;
-                title: string;
                 slug: string;
-                description: string;
                 price: import("@prisma/client/runtime/library").Decimal;
                 status: import("@prisma/client").$Enums.ProductStatus;
                 saleType: import("@prisma/client").$Enums.ProductSaleType;
@@ -157,22 +156,22 @@ export declare class PackagesService {
             packageId: string;
         })[];
     } & {
+        description: string | null;
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         slug: string;
-        description: string | null;
         isActive: boolean;
         specialPrice: import("@prisma/client/runtime/library").Decimal;
     }>;
     remove(id: string): Promise<{
+        description: string | null;
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         slug: string;
-        description: string | null;
         isActive: boolean;
         specialPrice: import("@prisma/client/runtime/library").Decimal;
     }>;

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContactDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 class ContactDto {
     name;
     email;
@@ -21,31 +22,58 @@ class ContactDto {
 }
 exports.ContactDto = ContactDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Juan Pérez',
+        description: 'Nombre del contacto',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], ContactDto.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'juan@example.com',
+        description: 'Correo electrónico del contacto',
+    }),
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], ContactDto.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '+573001234567',
+        description: 'Teléfono de contacto (opcional)',
+        required: false,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], ContactDto.prototype, "phone", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2024-12-25',
+        description: 'Fecha del evento (opcional)',
+        required: false,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], ContactDto.prototype, "eventDate", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Cumpleaños infantil',
+        description: 'Tipo de evento (opcional)',
+        required: false,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], ContactDto.prototype, "eventType", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Quiero información sobre el castillo inflable para el cumpleaños de mi hijo',
+        description: 'Mensaje del contacto',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

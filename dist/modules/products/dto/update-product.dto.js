@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateProductDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const swagger_1 = require("@nestjs/swagger");
 const product_status_enum_1 = require("../../../common/enums/product-status.enum");
 const product_sale_type_enum_1 = require("../../../common/enums/product-sale-type.enum");
 const create_product_dto_1 = require("./create-product.dto");
@@ -29,52 +30,103 @@ class UpdateProductDto {
 }
 exports.UpdateProductDto = UpdateProductDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Castillo Inflable Premium',
+        description: 'Título del producto',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "title", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'castillo-inflable-premium',
+        description: 'Slug URL friendly',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "slug", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Castillo inflable de 6x6 metros ideal para fiestas infantiles',
+        description: 'Descripción del producto',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "description", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 150000,
+        description: 'Precio del producto',
+        minimum: 0,
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(0),
     __metadata("design:type", Number)
 ], UpdateProductDto.prototype, "price", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: product_status_enum_1.ProductStatus,
+        description: 'Estado del producto',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(product_status_enum_1.ProductStatus),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "status", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: product_sale_type_enum_1.ProductSaleType,
+        description: 'Tipo de venta (alquiler o venta)',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(product_sale_type_enum_1.ProductSaleType),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "saleType", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-de-categoria',
+        description: 'ID de la categoría',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "categoryId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'Orden de visualización',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], UpdateProductDto.prototype, "sortOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: 'Si el producto está activo',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateProductDto.prototype, "isActive", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        type: [create_product_dto_1.ProductImageDto],
+        description: 'Array de imágenes del producto',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

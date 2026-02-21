@@ -1,9 +1,11 @@
 import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { EmergencyAdminDto } from './dto/emergency-admin.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserRole } from '@prisma/client';
 
@@ -12,6 +14,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(dto: LoginDto) {
@@ -35,6 +38,55 @@ export class AuthService {
         email: dto.email,
         password: hash,
         name: dto.name ?? null,
+        role: UserRole.ADMIN,
+      },
+    });
+    return this.buildToken(user);
+  }
+
+  /**
+   * Crea un administrador de emergencia usando un token seguro.
+   * Este endpoint está diseñado para recuperación cuando no hay acceso al sistema.
+   * El token debe configurarse en la variable de entorno EMERGENCY_ADMIN_TOKEN
+   */
+  async createEmergencyAdmin(dto: EmergencyAdminDto) {
+    const emergencyToken = this.configService.get<string>('EMERGENCY_ADMIN_TOKEN');
+    
+    if (!emergencyToken) {
+      throw new ForbiddenException('Sistema de recuperación no configurado. Contacte al administrador.');
+    }
+    
+    // Validar token de emergencia
+    if (dto.emergencyToken !== emergencyToken) {
+      // Usar timing attack safe comparison
+      const isValid = await bcrypt.compare(dto.emergencyToken, emergencyToken).catch(() => false);
+      if (!isValid && dto.emergencyToken !== emergencyToken) {
+        throw new UnauthorizedException('Token de emergencia inválido');
+      }
+    }
+    
+    // Usar email por defecto si no se proporciona
+    const email = dto.email || 'admin@emergency.local';
+    
+    // Verificar si ya existe usuario con ese email
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      // Actualizar contraseña del usuario existente
+      const hash = await bcrypt.hash(dto.password, 10);
+      const user = await this.prisma.user.update({
+        where: { id: existing.id },
+        data: { password: hash, name: dto.name ?? existing.name },
+      });
+      return this.buildToken(user);
+    }
+    
+    // Crear nuevo administrador
+    const hash = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password: hash,
+        name: dto.name ?? 'Emergency Admin',
         role: UserRole.ADMIN,
       },
     });

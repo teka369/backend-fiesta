@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductQueryDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const swagger_1 = require("@nestjs/swagger");
 const product_status_enum_1 = require("../../../common/enums/product-status.enum");
 class ProductQueryDto {
     page = 1;
@@ -24,6 +25,13 @@ class ProductQueryDto {
 }
 exports.ProductQueryDto = ProductQueryDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'Número de página',
+        minimum: 1,
+        required: false,
+        default: 1,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
@@ -31,6 +39,14 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductQueryDto.prototype, "page", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 10,
+        description: 'Límite de resultados por página',
+        minimum: 1,
+        maximum: 500,
+        required: false,
+        default: 10,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
@@ -39,26 +55,53 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductQueryDto.prototype, "limit", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: product_status_enum_1.ProductStatus,
+        description: 'Filtrar por estado del producto',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(product_status_enum_1.ProductStatus),
     __metadata("design:type", String)
 ], ProductQueryDto.prototype, "status", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-de-categoria',
+        description: 'Filtrar por ID de categoría',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ProductQueryDto.prototype, "categoryId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'castillo',
+        description: 'Buscar en título y descripción',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ProductQueryDto.prototype, "search", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: ['title', 'price', 'createdAt', 'status'],
+        description: 'Campo por el cual ordenar',
+        required: false,
+        default: 'createdAt',
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ProductQueryDto.prototype, "sortBy", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: ['asc', 'desc'],
+        description: 'Dirección del ordenamiento',
+        required: false,
+        default: 'asc',
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)

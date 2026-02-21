@@ -7,6 +7,7 @@ import { ProductQueryDto } from './dto/product-query.dto';
 import { BulkStatusDto } from './dto/bulk-status.dto';
 import { ProductStatus } from '../../common/enums/product-status.enum';
 import { SettingsService } from '../settings/settings.service';
+import { toSlug, generateUniqueSlugSync } from '../../common/utils/slugify';
 
 @Injectable()
 export class ProductsService {
@@ -15,25 +16,16 @@ export class ProductsService {
     private readonly settingsService: SettingsService,
   ) {}
 
-  private toSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
-
   private ensureSlug(dto: CreateProductDto | UpdateProductDto, title?: string): string | undefined {
     const t = 'title' in dto ? dto.title : title;
     if (!t) return undefined;
-    return this.toSlug(t);
+    return toSlug(t);
   }
 
   async create(dto: CreateProductDto) {
-    const slug = dto.slug ?? this.toSlug(dto.title);
-    const existing = await this.prisma.product.findUnique({ where: { slug } });
-    const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+    const baseSlug = dto.slug ?? toSlug(dto.title);
+    const existing = await this.prisma.product.findUnique({ where: { slug: baseSlug } });
+    const finalSlug = generateUniqueSlugSync(baseSlug, !!existing);
 
     const product = await this.prisma.product.create({
       data: {
@@ -115,7 +107,7 @@ export class ProductsService {
   async update(id: string, dto: UpdateProductDto) {
     await this.findOne(id);
 
-    const slug = dto.slug ?? (dto.title ? this.toSlug(dto.title) : undefined);
+    const slug = dto.slug ?? (dto.title ? toSlug(dto.title) : undefined);
     const updateData: Parameters<typeof this.prisma.product.update>[0]['data'] = {
       ...(dto.title && { title: dto.title }),
       ...(slug && { slug }),

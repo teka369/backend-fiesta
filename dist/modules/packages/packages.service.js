@@ -12,18 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PackagesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const slugify_1 = require("../../common/utils/slugify");
 let PackagesService = class PackagesService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
-    }
-    toSlug(text) {
-        return text
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
     }
     async findAll() {
         return this.prisma.package.findMany({
@@ -51,9 +44,9 @@ let PackagesService = class PackagesService {
         return pkg;
     }
     async create(dto) {
-        const slug = dto.slug ?? this.toSlug(dto.title);
+        const slug = dto.slug ?? (0, slugify_1.toSlug)(dto.title);
         const existing = await this.prisma.package.findUnique({ where: { slug } });
-        const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+        const finalSlug = (0, slugify_1.generateUniqueSlugSync)(slug, !!existing);
         return this.prisma.package.create({
             data: {
                 title: dto.title,
@@ -82,12 +75,12 @@ let PackagesService = class PackagesService {
         if (dto.slug)
             slug = dto.slug;
         else if (dto.title) {
-            slug = this.toSlug(dto.title);
+            slug = (0, slugify_1.toSlug)(dto.title);
             const existing = await this.prisma.package.findFirst({
                 where: { slug, id: { not: id } },
             });
             if (existing)
-                slug = `${slug}-${Date.now()}`;
+                slug = (0, slugify_1.generateUniqueSlugSync)(slug, true);
         }
         const data = {
             ...(dto.title && { title: dto.title }),

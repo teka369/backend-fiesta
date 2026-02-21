@@ -1,6 +1,7 @@
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { EmergencyAdminDto } from './dto/emergency-admin.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 export declare class AuthController {
     private readonly authService;
@@ -15,6 +16,15 @@ export declare class AuthController {
         };
     }>;
     register(dto: RegisterDto): Promise<{
+        access_token: string;
+        user: {
+            id: string;
+            email: string;
+            role: string;
+            name: string | null;
+        };
+    }>;
+    createEmergencyAdmin(dto: EmergencyAdminDto): Promise<{
         access_token: string;
         user: {
             id: string;

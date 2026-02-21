@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BulkStatusDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 const product_status_enum_1 = require("../../../common/enums/product-status.enum");
 class BulkStatusDto {
     status;
@@ -18,10 +19,20 @@ class BulkStatusDto {
 }
 exports.BulkStatusDto = BulkStatusDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        enum: product_status_enum_1.ProductStatus,
+        description: 'Nuevo estado para los productos',
+    }),
     (0, class_validator_1.IsEnum)(product_status_enum_1.ProductStatus),
     __metadata("design:type", String)
 ], BulkStatusDto.prototype, "status", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        type: [String],
+        example: ['uuid-1', 'uuid-2', 'uuid-3'],
+        description: 'Array de IDs de productos a actualizar',
+        minItems: 1,
+    }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ArrayMinSize)(1),
     __metadata("design:type", Array)

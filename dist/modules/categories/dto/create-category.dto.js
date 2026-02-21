@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateCategoryDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const swagger_1 = require("@nestjs/swagger");
 class CreateCategoryDto {
     name;
     slug;
@@ -22,31 +23,60 @@ class CreateCategoryDto {
 }
 exports.CreateCategoryDto = CreateCategoryDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Castillos Inflables',
+        description: 'Nombre de la categoría',
+    }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'castillos-inflables',
+        description: 'Slug URL friendly (opcional)',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "slug", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Gran variedad de castles inflables para fiestas',
+        description: 'Descripción de la categoría',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "description", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'https://example.com/category-image.jpg',
+        description: 'URL de imagen de la categoría',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "imageUrl", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'Orden de visualización',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], CreateCategoryDto.prototype, "sortOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: 'Si la categoría está activa',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)

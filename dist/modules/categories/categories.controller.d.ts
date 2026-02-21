@@ -5,25 +5,25 @@ export declare class CategoriesController {
     private readonly categoriesService;
     constructor(categoriesService: CategoriesService);
     findAll(): Promise<{
+        description: string | null;
         name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         sortOrder: number;
         slug: string;
-        description: string | null;
         isActive: boolean;
         imageUrl: string | null;
     }[]>;
     findOne(id: string): Promise<{
         products: {
+            description: string;
+            title: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             sortOrder: number;
-            title: string;
             slug: string;
-            description: string;
             price: import("@prisma/client/runtime/library").Decimal;
             status: import("@prisma/client").$Enums.ProductStatus;
             saleType: import("@prisma/client").$Enums.ProductSaleType;
@@ -31,46 +31,46 @@ export declare class CategoriesController {
             isActive: boolean;
         }[];
     } & {
+        description: string | null;
         name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         sortOrder: number;
         slug: string;
-        description: string | null;
         isActive: boolean;
         imageUrl: string | null;
     }>;
     create(dto: CreateCategoryDto): Promise<{
+        description: string | null;
         name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         sortOrder: number;
         slug: string;
-        description: string | null;
         isActive: boolean;
         imageUrl: string | null;
     }>;
     update(id: string, dto: UpdateCategoryDto): Promise<{
+        description: string | null;
         name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         sortOrder: number;
         slug: string;
-        description: string | null;
         isActive: boolean;
         imageUrl: string | null;
     }>;
     remove(id: string): Promise<{
+        description: string | null;
         name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         sortOrder: number;
         slug: string;
-        description: string | null;
         isActive: boolean;
         imageUrl: string | null;
     }>;

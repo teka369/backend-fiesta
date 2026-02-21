@@ -12,18 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoriesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const slugify_1 = require("../../common/utils/slugify");
 let CategoriesService = class CategoriesService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
-    }
-    toSlug(text) {
-        return text
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
     }
     async findAll() {
         const categories = await this.prisma.category.findMany({
@@ -41,9 +34,9 @@ let CategoriesService = class CategoriesService {
         return cat;
     }
     async create(dto) {
-        const slug = dto.slug ?? this.toSlug(dto.name);
+        const slug = dto.slug ?? (0, slugify_1.toSlug)(dto.name);
         const existing = await this.prisma.category.findUnique({ where: { slug } });
-        const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+        const finalSlug = (0, slugify_1.generateUniqueSlugSync)(slug, !!existing);
         const category = await this.prisma.category.create({
             data: {
                 name: dto.name,
@@ -62,12 +55,12 @@ let CategoriesService = class CategoriesService {
         if (dto.slug)
             slug = dto.slug;
         else if (dto.name) {
-            slug = this.toSlug(dto.name);
+            slug = (0, slugify_1.toSlug)(dto.name);
             const existing = await this.prisma.category.findFirst({
                 where: { slug, id: { not: id } },
             });
             if (existing)
-                slug = `${slug}-${Date.now()}`;
+                slug = (0, slugify_1.generateUniqueSlugSync)(slug, true);
         }
         const category = await this.prisma.category.update({
             where: { id },

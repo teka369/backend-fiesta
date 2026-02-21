@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const product_status_enum_1 = require("../../common/enums/product-status.enum");
 const settings_service_1 = require("../settings/settings.service");
+const slugify_1 = require("../../common/utils/slugify");
 let ProductsService = class ProductsService {
     prisma;
     settingsService;
@@ -21,24 +22,16 @@ let ProductsService = class ProductsService {
         this.prisma = prisma;
         this.settingsService = settingsService;
     }
-    toSlug(title) {
-        return title
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
-    }
     ensureSlug(dto, title) {
         const t = 'title' in dto ? dto.title : title;
         if (!t)
             return undefined;
-        return this.toSlug(t);
+        return (0, slugify_1.toSlug)(t);
     }
     async create(dto) {
-        const slug = dto.slug ?? this.toSlug(dto.title);
-        const existing = await this.prisma.product.findUnique({ where: { slug } });
-        const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+        const baseSlug = dto.slug ?? (0, slugify_1.toSlug)(dto.title);
+        const existing = await this.prisma.product.findUnique({ where: { slug: baseSlug } });
+        const finalSlug = (0, slugify_1.generateUniqueSlugSync)(baseSlug, !!existing);
         const product = await this.prisma.product.create({
             data: {
                 title: dto.title,
@@ -112,7 +105,7 @@ let ProductsService = class ProductsService {
     }
     async update(id, dto) {
         await this.findOne(id);
-        const slug = dto.slug ?? (dto.title ? this.toSlug(dto.title) : undefined);
+        const slug = dto.slug ?? (dto.title ? (0, slugify_1.toSlug)(dto.title) : undefined);
         const updateData = {
             ...(dto.title && { title: dto.title }),
             ...(slug && { slug }),

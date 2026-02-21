@@ -12,16 +12,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PackageItemDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const swagger_1 = require("@nestjs/swagger");
 class PackageItemDto {
     productId;
     quantity = 1;
 }
 exports.PackageItemDto = PackageItemDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-del-producto',
+        description: 'ID del producto incluido en el paquete',
+    }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PackageItemDto.prototype, "productId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 2,
+        description: 'Cantidad del producto',
+        minimum: 1,
+        default: 1,
+    }),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
     (0, class_transformer_1.Type)(() => Number),

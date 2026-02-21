@@ -23,10 +23,16 @@ exports.AuthModule = AuthModule = __decorate([
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
-                useFactory: (config) => ({
-                    secret: config.get('JWT_SECRET') || 'clave-secreta-cambiar-en-produccion',
-                    signOptions: { expiresIn: '7d' },
-                }),
+                useFactory: (config) => {
+                    const secret = config.get('JWT_SECRET');
+                    if (!secret) {
+                        throw new Error('JWT_SECRET no está configurada en el archivo .env');
+                    }
+                    return {
+                        secret,
+                        signOptions: { expiresIn: '7d' },
+                    };
+                },
                 inject: [config_1.ConfigService],
             }),
         ],

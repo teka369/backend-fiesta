@@ -2,19 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
+import { toSlug, generateUniqueSlugSync } from '../../common/utils/slugify';
 
 @Injectable()
 export class PackagesService {
   constructor(private readonly prisma: PrismaService) {}
-
-  private toSlug(text: string): string {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
 
   async findAll() {
     return this.prisma.package.findMany({
@@ -43,9 +35,9 @@ export class PackagesService {
   }
 
   async create(dto: CreatePackageDto) {
-    const slug = dto.slug ?? this.toSlug(dto.title);
+    const slug = dto.slug ?? toSlug(dto.title);
     const existing = await this.prisma.package.findUnique({ where: { slug } });
-    const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+    const finalSlug = generateUniqueSlugSync(slug, !!existing);
     return this.prisma.package.create({
       data: {
         title: dto.title,
@@ -74,11 +66,11 @@ export class PackagesService {
     let slug: string | undefined;
     if (dto.slug) slug = dto.slug;
     else if (dto.title) {
-      slug = this.toSlug(dto.title);
+      slug = toSlug(dto.title);
       const existing = await this.prisma.package.findFirst({
         where: { slug, id: { not: id } },
       });
-      if (existing) slug = `${slug}-${Date.now()}`;
+      if (existing) slug = generateUniqueSlugSync(slug, true);
     }
     const data: Parameters<typeof this.prisma.package.update>[0]['data'] = {
       ...(dto.title && { title: dto.title }),

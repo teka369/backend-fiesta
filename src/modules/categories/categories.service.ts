@@ -2,19 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { toSlug, generateUniqueSlugSync } from '../../common/utils/slugify';
 
 @Injectable()
 export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
-
-  private toSlug(text: string): string {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
 
   async findAll() {
     const categories = await this.prisma.category.findMany({
@@ -33,9 +25,9 @@ export class CategoriesService {
   }
 
   async create(dto: CreateCategoryDto) {
-    const slug = dto.slug ?? this.toSlug(dto.name);
+    const slug = dto.slug ?? toSlug(dto.name);
     const existing = await this.prisma.category.findUnique({ where: { slug } });
-    const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+    const finalSlug = generateUniqueSlugSync(slug, !!existing);
     const category = await this.prisma.category.create({
       data: {
         name: dto.name,
@@ -54,11 +46,11 @@ export class CategoriesService {
     let slug: string | undefined;
     if (dto.slug) slug = dto.slug;
     else if (dto.name) {
-      slug = this.toSlug(dto.name);
+      slug = toSlug(dto.name);
       const existing = await this.prisma.category.findFirst({
         where: { slug, id: { not: id } },
       });
-      if (existing) slug = `${slug}-${Date.now()}`;
+      if (existing) slug = generateUniqueSlugSync(slug, true);
     }
     const category = await this.prisma.category.update({
       where: { id },

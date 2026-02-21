@@ -45,15 +45,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
 const client_1 = require("@prisma/client");
 let AuthService = class AuthService {
     prisma;
     jwtService;
-    constructor(prisma, jwtService) {
+    configService;
+    constructor(prisma, jwtService, configService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
+        this.configService = configService;
     }
     async login(dto) {
         const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -78,6 +81,38 @@ let AuthService = class AuthService {
                 email: dto.email,
                 password: hash,
                 name: dto.name ?? null,
+                role: client_1.UserRole.ADMIN,
+            },
+        });
+        return this.buildToken(user);
+    }
+    async createEmergencyAdmin(dto) {
+        const emergencyToken = this.configService.get('EMERGENCY_ADMIN_TOKEN');
+        if (!emergencyToken) {
+            throw new common_1.ForbiddenException('Sistema de recuperación no configurado. Contacte al administrador.');
+        }
+        if (dto.emergencyToken !== emergencyToken) {
+            const isValid = await bcrypt.compare(dto.emergencyToken, emergencyToken).catch(() => false);
+            if (!isValid && dto.emergencyToken !== emergencyToken) {
+                throw new common_1.UnauthorizedException('Token de emergencia inválido');
+            }
+        }
+        const email = dto.email || 'admin@emergency.local';
+        const existing = await this.prisma.user.findUnique({ where: { email } });
+        if (existing) {
+            const hash = await bcrypt.hash(dto.password, 10);
+            const user = await this.prisma.user.update({
+                where: { id: existing.id },
+                data: { password: hash, name: dto.name ?? existing.name },
+            });
+            return this.buildToken(user);
+        }
+        const hash = await bcrypt.hash(dto.password, 10);
+        const user = await this.prisma.user.create({
+            data: {
+                email,
+                password: hash,
+                name: dto.name ?? 'Emergency Admin',
                 role: client_1.UserRole.ADMIN,
             },
         });
@@ -140,6 +175,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
