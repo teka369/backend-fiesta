@@ -9,7 +9,10 @@ async function bootstrap() {
 
   // 1. Configuración de CORS (SIEMPRE antes del listen)
   app.enableCors({
-    origin: 'https://sunnypartyrentalsllc.com', // Tu dominio real
+    origin: [
+      'https://sunnypartyrentalsllc.com',
+      'https://www.sunnypartyrentalsllc.com'
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
